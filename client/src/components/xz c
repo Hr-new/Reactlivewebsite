@@ -1,0 +1,89 @@
+import React, { Component } from 'react'
+import { Link,useHistory } from 'react-router-dom';
+import Axios from 'axios';
+import DefaultUserPic from "../uploads/team-male.jpg";
+
+
+export default class Leftmenu extends Component {
+    constructor(props) {
+        super(props);
+        const { history } = this.props
+        const a = sessionStorage.getItem('Id')
+        // if (!a) {
+        //     history.push('/login')
+        // }
+
+        this.state = {
+            user_id: this.props.user_id,
+            name: this.props.name,
+            profileImage:this.props.profileImage,
+            uploadedFile:null
+            // password:this.props.password
+
+        }
+    }
+    fetchUserDetails = (user_id) => {
+        // alert(user_id);
+        Axios.post("http://localhost:3001/profile", { id: user_id }, {
+        }).then(res => {
+            console.log(res.data)
+            this.setState({ name: res.data[0].name });
+            this.setState({profileImage:res.data[0].Profile_image})
+            // console.log(this.state.profileImage)
+        })
+            .catch(err => console.log(err))
+    }
+
+    componentDidMount() {
+        const user_id = sessionStorage.getItem('Id')
+
+        this.fetchUserDetails(user_id);
+    }
+
+    render() {
+        if(this.state.profileImage){
+            var imagestr=this.state.profileImage;
+            // console.log(imagestr)
+            
+            // imagestr = imagestr.replace("public/", "");
+            var profilePic="http://localhost:3001/profile/"+imagestr;
+        }else{
+             profilePic=DefaultUserPic;
+        }
+
+    return (
+        
+        <div>
+            {/* Main Sidebar Container */}
+            <aside className="main-sidebar sidebar-dark-primary elevation-4">
+                {/* Brand Logo */}
+                {/* <a href="#" className="brand-link">
+                    <img src={profilePic} alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8' }} />
+                    <span className="brand-text font-weight-light">{this.state.name}</span>
+                </a> */}
+                {/* Sidebar */}
+                <div className="sidebar">
+                    {/* Sidebar user panel (optional) */}
+                    <div className="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div className="image">
+                            <img src={profilePic} className="img-circle elevation-2" alt="User Image" />
+                        </div>
+                        <div className="info">
+                            <a href="#" className="d-block">{this.state.name}</a>
+                        </div>
+                    </div>
+                    {/* SidebarSearch Form */}
+
+                    {/* Sidebar Menu */}
+                    <nav className="mt-2">
+                        
+                    </nav>
+                    {/* /.sidebar-menu */}
+                </div>
+                {/* /.sidebar */}
+            </aside>
+
+        </div>
+    )
+}
+}
